@@ -14,3 +14,4 @@ sudo apt clean -y
 
 # Display a message indicating the process is complete
 echo "System update and upgrade completed successfully."
+echo "The exit code for the package upgrade is: $?"
