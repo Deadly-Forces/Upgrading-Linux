@@ -8,7 +8,7 @@ apt list --upgradable
 
 # Upgrade the packages
 sudo apt upgrade -y
-# Optional: Clean up unnecessary packages and cache
+# Clean up unnecessary packages and cache
 sudo apt autoremove -y
 sudo apt clean -y
 
