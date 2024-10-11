@@ -9,11 +9,10 @@ apt list --upgradable
 # Upgrade the packages
 sudo apt upgrade -y
 
-read -p "Do you want to run 'autoremove' and 'clean'? (y/n): " user_input
+read -p "Do you want to run autoremove old packages and clear cache? (y/n): " user_input
 
 # Check if input is true
 if [[ "$user_input" == "y" || "$user_input" == "Y" ]]; then
-    echo "Running 'sudo apt autoremove -y' and 'sudo apt clean -y'..."
     sudo apt autoremove -y
     sudo apt clean -y
 else
