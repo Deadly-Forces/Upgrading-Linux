@@ -1,1 +1,5 @@
-Here is the simple code for upgrading the linux through terminal.Just simply type the script name and see the magic. Do it & say thanks to me.
+# Upgrading-LinuxPackage
+Simple program for updating & upgrading your linux system via command line.
+
+## Note
+This program uses `sudo`, Make sure you have admin permissions.
