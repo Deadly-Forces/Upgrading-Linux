@@ -1,14 +1,15 @@
 #!/bin/bash
+
 # Color variables
 GREEN="\033[0;32m"
 YELLOW="\033[1;33m"
 RED="\033[0;31m"
-NC="\033[0m" 
-# Display a message in green
+NC="\033[0m"
+# Function to display a message in green
 function success_message() {
     echo -e "${GREEN}$1${NC}"
 }
-# Display a message in yellow
+# Function to display a message in yellow
 function info_message() {
     echo -e "${YELLOW}$1${NC}"
 }
@@ -16,6 +17,11 @@ function info_message() {
 function error_message() {
     echo -e "${RED}$1${NC}"
 }
+# Check for root (sudo) privileges
+if [ "$(id -u)" -ne 0 ]; then
+    error_message "This script must be run as root or with sudo."
+    exit 1
+fi
 # MAIN Start script
 clear
 success_message "Starting system update and upgrade process..."
@@ -28,7 +34,7 @@ info_message "Uptime: $(uptime -p)"
 
 # Update the package list and check for errors
 info_message "Updating package list..."
-sudo apt update -y
+sudo apt-get update -y
 if [ $? -ne 0 ]; then
     error_message "Failed to update package list. Exiting."
     exit 1
@@ -42,7 +48,7 @@ apt list --upgradable
 read -p "Do you want to upgrade packages now? (y/n): " upgrade_input
 if [[ "$upgrade_input" =~ ^[Yy]$ ]]; then
     info_message "Upgrading packages..."
-    sudo apt upgrade -y
+    sudo apt-get upgrade -y
     if [ $? -ne 0 ]; then
         error_message "Package upgrade failed. Exiting."
         exit 1
@@ -56,7 +62,7 @@ fi
 read -p "Do you want to perform a distribution upgrade (dist-upgrade)? (y/n): " dist_upgrade_input
 if [[ "$dist_upgrade_input" =~ ^[Yy]$ ]]; then
     info_message "Performing distribution upgrade (dist-upgrade)..."
-    sudo apt dist-upgrade -y
+    sudo apt-get dist-upgrade -y
     if [ $? -ne 0 ]; then
         error_message "Distribution upgrade failed. Exiting."
         exit 1
@@ -65,16 +71,17 @@ if [[ "$dist_upgrade_input" =~ ^[Yy]$ ]]; then
 else
     info_message "Skipping distribution upgrade."
 fi
+
 # Ask if user wants to autoremove old packages and clean the package cache
 read -p "Do you want to remove unnecessary packages and clean the cache? (y/n): " autoremove_input
 if [[ "$autoremove_input" =~ ^[Yy]$ ]]; then
     info_message "Removing unnecessary packages..."
-    sudo apt autoremove -y
+    sudo apt-get autoremove -y
     if [ $? -ne 0 ]; then
         error_message "Failed to remove unnecessary packages."
     fi
     info_message "Cleaning the package cache..."
-    sudo apt clean -y
+    sudo apt-get clean -y
     if [ $? -ne 0 ]; then
         error_message "Failed to clean the package cache."
     fi
@@ -96,7 +103,20 @@ fi
 success_message "System update and upgrade completed successfully."
 
 # Log file path
-LOG_FILE="/var/log/system_update_upgrade.log"
+LOG_FILE="/home/$USER/system_update_upgrade.log"  # Save log in user's home directory
+
+# Ensure the log directory exists (creating it if necessary)
+LOG_DIR=$(dirname "$LOG_FILE")
+if [ ! -d "$LOG_DIR" ]; then
+    error_message "Log directory does not exist. Attempting to create it..."
+    mkdir -p "$LOG_DIR"
+    if [ $? -ne 0 ]; then
+        error_message "Failed to create log directory. Exiting."
+        exit 1
+    fi
+    success_message "Log directory created successfully."
+fi
+
 info_message "Logging the update process to $LOG_FILE..."
 
 # Save all output to log file
@@ -105,12 +125,12 @@ info_message "Logging the update process to $LOG_FILE..."
     uname -a
     uname -r
     uptime -p
-    sudo apt update
+    sudo apt-get update -y
     apt list --upgradable
-    sudo apt upgrade -y
-    sudo apt dist-upgrade -y
-    sudo apt autoremove -y
-    sudo apt clean -y
+    sudo apt-get upgrade -y
+    sudo apt-get dist-upgrade -y
+    sudo apt-get autoremove -y
+    sudo apt-get clean -y
     sudo dpkg --configure -a
     echo "-----------------------------------------"
 } >> "$LOG_FILE"
@@ -118,4 +138,3 @@ info_message "Log has been saved to $LOG_FILE"
 
 # Display the exit status
 echo "The exit code for the package upgrade is: $?"
-
