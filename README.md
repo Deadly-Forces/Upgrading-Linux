@@ -13,7 +13,7 @@
   1) Color-coded output: The script uses green, yellow, and red colors to indicate success, info, and error messages respectively.
   2) System information: Displays kernel version and uptime before starting the upgrade.
   3) Progress indicators: Inform the user of the various stages (e.g., updating, upgrading, autoremove).
-  4) Logging: Logs all the terminal output into `/var/log/system_update.log` for later review.
+  4) Logging: Logs all the terminal output into `/home/root/system_update_upgrade.log` for later review.
   5) Dist-upgrade option: Adds an optional distribution upgrade for more comprehensive package management.
   6) Broken packages check: Ensures that any broken packages are handled.
 
@@ -47,3 +47,11 @@
     `chmod +x ./update.sh`
   Run the script:
     `sudo ./update.sh`
+
+# For the Warning Section which you are seeing:
+  `WARNING: apt does not have a stable CLI interface. Use with caution in scripts.` it is issued by the APT    package manager (which is used on Debian Based Systems). It means the APT CLI interface is not
+  guaranteed to remain stable accross version. It may change in ways that could break existing scripts,
+  which is why the warning is issued, especially when automating tasks with scripts.
+
+## Solution: 
+To avoid this warning and ensure the stability of your scripts, you can replace apt with `apt-get` or `dpkg` in your scripts, as they provide a more stable interface for automation and scripting.
