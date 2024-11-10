@@ -16,7 +16,6 @@ function info_message() {
 function error_message() {
     echo -e "${RED}$1${NC}"
 }
-
 # MAIN Start script
 clear
 success_message "Starting system update and upgrade process..."
