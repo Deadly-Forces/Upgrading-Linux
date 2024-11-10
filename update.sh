@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # Color variables
 GREEN="\033[0;32m"
 YELLOW="\033[1;33m"
@@ -17,7 +16,8 @@ function info_message() {
 function error_message() {
     echo -e "${RED}$1${NC}"
 }
-# Check for root (sudo) privileges
+
+# Check root (sudo) privileges
 if [ "$(id -u)" -ne 0 ]; then
     error_message "This script must be run as root or with sudo."
     exit 1
@@ -36,7 +36,8 @@ info_message "Uptime: $(uptime -p)"
 info_message "Updating package list..."
 sudo apt-get update -y
 if [ $? -ne 0 ]; then
-    error_message "Failed to update package list. Exiting."
+    error_message "Failed to update package list. Trying with debug mode for more details."
+    sudo apt-get update -o Debug::Acquire::http=true -y 
     exit 1
 fi
 
@@ -72,7 +73,7 @@ else
     info_message "Skipping distribution upgrade."
 fi
 
-# Ask if user wants to autoremove old packages and clean the package cache
+# Ask the user if they wants to autoremove old packages and clean the package cache
 read -p "Do you want to remove unnecessary packages and clean the cache? (y/n): " autoremove_input
 if [[ "$autoremove_input" =~ ^[Yy]$ ]]; then
     info_message "Removing unnecessary packages..."
@@ -90,7 +91,7 @@ else
     info_message "Skipping autoremove and cache cleaning."
 fi
 
-# Check for broken packages and fix them
+# Check's the broken packages and fix them
 info_message "Checking for broken packages..."
 sudo dpkg --configure -a
 if [ $? -ne 0 ]; then
