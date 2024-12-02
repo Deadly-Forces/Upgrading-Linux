@@ -43,7 +43,7 @@ fi
 
 # List upgradable packages
 info_message "Listing upgradable packages..."
-apt list --upgradable
+apt list --upgradable -a
 
 # Ask if user wants to proceed with upgrading
 read -p "Do you want to upgrade packages now? (y/n): " upgrade_input
